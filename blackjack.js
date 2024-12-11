@@ -26,6 +26,8 @@ document.getElementById("stand-btn").addEventListener("click", async () => {
     displayHand(dealerHand, "dealer");
   }
 
+  displayHand(dealerHand, "dealer", true);
+
   // determine the winner
   const playerScore = calculateScore(playerHand);
   const dealerScore = calculateScore(dealerHand);
@@ -53,20 +55,31 @@ async function getShuffledDeck() {
   return data.deck_id;
 }
 
-function displayHand(hand, name) {
+function displayHand(hand, name, reveal) {
   // console.log(`${name.toLowerCase()}-hand`)
   const handElement = document.getElementById(`${name.toLowerCase()}-hand`);
   handElement.innerHTML = "";
 
-  hand.forEach((card) => {
+  hand.forEach((card, index) => {
     const cardDiv = document.createElement("div");
     cardDiv.classList.add("card");
-    cardDiv.style.backgroundImage = `url(${card.image})`;
+
+    if (name === "dealer" && index > 0 && dealerHand.length === 2 && !reveal) {
+      cardDiv.style.backgroundImage =
+        'url("https://via.placeholder.com/75x110/000000/FFFFFF?text=Hidden")'; // Placeholder for hidden card
+    } else {
+      cardDiv.style.backgroundImage = `url(${card.image})`;
+    }
+
     cardDiv.style.backgroundSize = "cover";
     handElement.appendChild(cardDiv);
   });
 
-  message.textContent = `${name}'s hand is ready!`;
+  message.textContent = `${
+    name === "dealer"
+      ? "Dealer's first card is revealed!"
+      : "Player's hand is ready!"
+  }`;
 }
 
 async function drawCards(deckId, count = 1) {
